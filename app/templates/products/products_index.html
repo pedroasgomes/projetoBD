@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Products{% endblock %}</h1>
+  <a class="add-button" href="{{ url_for('products_register') }}">Add New Product</a>
+{% endblock %}
+
+{% block content %}
+  {% for product in products %}
+    <article class="post">
+      <header>
+        <div>
+          <h1>{{ product.name }}</h1>
+          <div class="about">SKU: {{ product.sku }}</div>
+          <div class="about">EAN: {{ product.ean }}</div>
+        </div>
+        <a class="action-button" href="{{ url_for('products_edit', sku=product.sku) }}">Edit</a>
+        <a class="delete-button" href="{{ url_for('products_remove', sku=product.sku) }}">Delete</a>
+      </header>
+      <p class="body">€ {{ product.price }}</p>
+      <p class="body">{{ product.description }}</p>
+    </article>
+    {% if not loop.last %}
+      <hr>
+    {% endif %}
+  {% endfor %}
+  <div class="pagination">
+    <div class="button-container">
+      {% if page > 1 %}
+        <a class="prev-button page-button" href="{{ url_for('products_index', page=page-1) }}">Previous</a>
+      {% endif %}
+      {% if has_next_page %}
+        <a class="next-button page-button" href="{{ url_for('products_index', page=page+1) }}">Next</a>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
