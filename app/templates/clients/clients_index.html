@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Clients{% endblock %}</h1>
+  <a class="add-button" href="{{ url_for('clients_register') }}">Add New Client</a>
+{% endblock %}
+
+{% block content %}
+  {% for client in clients %}
+    <article class="post">
+      <header>
+        <div>
+          <h1>{{ client['name'] }}</h1>
+          <div class="about">Customer No: {{ client['cust_no'] }}</div>
+          <div class="about">{{ client['email'] }}</div>
+        </div>
+        <a class="delete-button" href="{{ url_for('clients_remove', cust_no=client['cust_no']) }}">Remove</a>
+      </header>
+      <p class="body">Phone: {{ client['phone'] }}</p>
+      <p class="body">{{ client['address'] }}</p>
+    </article>
+    {% if not loop.last %}
+      <hr>
+    {% endif %}
+  {% endfor %}
+{% endblock %}
