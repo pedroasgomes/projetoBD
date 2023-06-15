@@ -22,5 +22,15 @@
     {% if not loop.last %}
       <hr>
     {% endif %}
-  {% endfor %}
-{% endblock %}
+    {% endfor %}
+    <div class="pagination">
+      <div class="button-container">
+        {% if page > 1 %}
+          <a class="prev-button page-button" href="{{ url_for('suppliers_index', page=page-1) }}">Previous</a>
+        {% endif %}
+        {% if has_next_page %}
+          <a class="next-button page-button" href="{{ url_for('suppliers_index', page=page+1) }}">Next</a>
+        {% endif %}
+      </div>
+    </div>
+  {% endblock %}

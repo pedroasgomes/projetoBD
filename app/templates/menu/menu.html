@@ -7,8 +7,7 @@
 
 {% block content %}
   <ul class="menu-list">
-    <li><a class="menu-button" href="{{ url_for('products_index') }}">Products</a></li>
-    <li><a class="menu-button" href="{{ url_for('suppliers_index') }}">Suppliers</a></li>
-    <li><a class="menu-button" href="{{ url_for('clients_index') }}">Clients</a></li>
+    <li><a class="menu-button" href="{{ url_for('manager_menu') }}">Manager</a></li>
+    <li><a class="menu-button" href="{{ url_for('client_menu') }}">Client</a></li>
   </ul>
 {% endblock %}
