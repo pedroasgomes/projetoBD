@@ -12,6 +12,7 @@ from flask import request
 from flask import url_for
 from psycopg.rows import namedtuple_row
 from psycopg_pool import ConnectionPool
+from collections import namedtuple
 
 
 # postgres://{user}:{password}@{hostname}:{port}/{database-name}
@@ -40,6 +41,7 @@ dictConfig(
 )
 
 app = Flask(__name__)
+app.secret_key = 'a722153ee1a56e595d8b86e5b15e8c8f'
 log = app.logger
 
 
@@ -65,8 +67,12 @@ def products_index():
 
     with pool.connection() as conn:
         with conn.cursor(row_factory=namedtuple_row) as cur:
-            cur.execute("SELECT sku, name, description, price, ean FROM product ORDER BY sku;")
-            
+            cur.execute(
+                """SELECT *
+                FROM product ORDER BY sku;
+                """
+            )
+
             # Only skip products if we are not on the first page
             if page > 1:
                 cur.fetchmany((page-1) * page_size)  # Skip the products from previous pages
@@ -81,41 +87,178 @@ def products_index():
 
     return render_template('products/products_index.html', products=products, page=page, page_size=page_size, has_next_page=has_next_page)
 
-
-
-@app.route("/products/register", methods=["GET", "POST"])
+@app.route("/products/register", methods=("GET", "POST"))
 def products_register():
     if request.method == "POST":
         with pool.connection() as conn:
             with conn.cursor(row_factory=namedtuple_row) as cur:
+
+                error = None 
+
                 sku = request.form["sku"]
+                if not sku:
+                    error = 'SKU is required'
+                else:
+                    existing_sku = cur.execute(
+                        """
+                        SELECT sku FROM product 
+                        WHERE sku = %s
+                        """,
+                        (sku,)
+                    ).fetchone()
+
+                    if existing_sku is not None:
+                        error = 'The SKU already exists. Please choose a different one.'
+
                 name = request.form["name"]
-                description = request.form["description"]
-                price = float(request.form["price"])
+                if not name:
+                    error = 'Name is required.'
+                elif len(name) > 200:
+                    error = 'Name should not exceed 200 characters.'
+
+                price = request.form["price"]
+                if not is_float(price):
+                    error = 'Price should be a number.'
+                elif float(price) < 0 or float(price) > 9999999999.99 :
+                    error = 'Price should be positive and less than 10000000000.'
+
                 ean = request.form["ean"]
+                if ean and not ean.isdigit():
+                    error = 'EAN should be a number.'
+                elif ean == '':
+                    ean = None
 
-                ###### ERROS PARA OS INPUTSAIOJFWAHEFGUAHGAUHGAUHWGUAWHGUWAOGHUWO
+                description = request.form["description"]
+                if description and len(description) > 255:
+                    error = 'Description should not exceed 255 characters.'
+                elif description == '':
+                    description = None
 
-                sql = "INSERT INTO product (sku, name, description, price, ean) VALUES (%s, %s, %s, %s, %s)"
-                values = (sku, name, description, price, ean)
-                cur.execute(sql, values)
-            conn.commit()
+                if error is not None:
+                    flash(error)
+                    return render_template("products/products_register.html", sku=sku, name=name, description=description, price=price, ean=ean)
 
-        return redirect(url_for("products_index"))
+
+                else:
+                    cur.execute(
+                    """
+                    INSERT INTO product (sku, name, description, price, ean)
+                    VALUES (%s, %s, %s, %s, %s)
+                    """,
+                    (sku, name, description, price, ean))
+
+                conn.commit()
+
+            return redirect(url_for("products_index"))
 
     return render_template("products/products_register.html")
 
+@app.route("/products/<string:old_sku>/edit", methods=("GET", "POST"))
+def products_edit(old_sku):
+    
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+
+            if request.method == "POST":
+                error = None 
+
+                new_sku = request.form["sku"]
+                if not new_sku:
+                    error = 'SKU is required'
+                elif int(new_sku) != int(old_sku):
+                    existing_sku = cur.execute(
+                        """
+                        SELECT sku FROM product 
+                        WHERE sku = %s
+                        """,
+                        (new_sku,)
+                    ).fetchone()
+
+                    if existing_sku is not None:
+                        error = 'The SKU already exists. Please choose a different one.'
+
+                name = request.form["name"]
+                if not name:
+                    error = 'Name is required.'
+                elif len(name) > 200:
+                    error = 'Name should not exceed 200 characters.'
+
+                price = request.form["price"]
+                if not is_float(price):
+                    error = 'Price should be a number.'
+                elif float(price) < 0 or float(price) > 9999999999.99 :
+                    error = 'Price should be positive and less than 10000000000.'
+
+                ean = request.form["ean"]
+                if ean and not ean.isdigit():
+                    error = 'EAN should be a number.'
+                elif ean == '':
+                    ean = None
+
+                description = request.form["description"]
+                if description and len(description) > 255:
+                    error = 'Description should not exceed 255 characters.'
+                elif description == '':
+                    description = None
+
+                if error is not None:
+                    flash(error)
+                    Product = namedtuple('Product', ['sku', 'name', 'description', 'price', 'ean'])
+                    product = Product(sku=new_sku, name=name, description=description, price=price, ean=ean)
+                    return render_template("products/products_edit.html", product=product)
 
 
-@app.route("/products/edit", methods=("GET",))
-def products_edit():
-    # your code here
-    pass
+                else:
+                    cur.execute(
+                        """
+                        UPDATE product 
+                        SET sku = %s, name = %s, description = %s, price = %s, ean = %s
+                        WHERE sku = %s
+                        """,
+                        (new_sku, name, description, price, ean, old_sku)
+                    )
 
-@app.route("/products/remove", methods=("GET",))
-def products_remove():
-    # your code here
-    pass
+                conn.commit()
+                return redirect(url_for("products_index"))
+        
+
+            cur.execute(
+                """
+                SELECT * FROM product
+                WHERE sku = %s
+                """,
+                (old_sku, )
+                )
+            product = cur.fetchone()
+    return render_template("products/products_edit.html", product=product)
+
+@app.route("/products/<string:sku>/remove", methods=("GET", "POST"))
+def products_remove(sku):
+    if request.method == "POST":
+        if "confirm" in request.form:
+            # product deletion code here
+            with pool.connection() as conn:
+                with conn.cursor(row_factory=namedtuple_row) as cur:
+                    cur.execute(
+                        """
+                        DELETE FROM product WHERE sku = %s
+                        """,
+                        (sku, )
+                    )
+
+                conn.commit()
+        return redirect(url_for("products_index"))
+
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            product = cur.execute(
+                """SELECT *
+                FROM product WHERE sku = %s
+                """,
+                (sku, )
+            ).fetchone()
+
+    return render_template("products/products_remove.html", product=product)
 
 
 
@@ -123,23 +266,47 @@ def products_remove():
 def suppliers_index():
     with pool.connection() as conn:
         with conn.cursor(row_factory=namedtuple_row) as cur:
-            cur.execute("""
+            suppliers = cur.execute(
+                """
                 SELECT * FROM supplier
                 ORDER BY tin
-            """)
-            suppliers = cur.fetchall()
-    return render_template("suppliers/suppliers_index.html", suppliers=suppliers)
+                """
+            ).fetchall()
 
+    return render_template("suppliers/suppliers_index.html", suppliers=suppliers)
 
 @app.route("/suppliers/register", methods=("GET",))
 def suppliers_register():
     # your code here
     pass
 
-@app.route("/suppliers/remove", methods=("GET",))
-def suppliers_remove():
-    # your code here
-    pass
+@app.route("/suppliers/<string:tin>/remove", methods=("GET", "POST"))
+def suppliers_remove(tin):
+    if request.method == "POST":
+        if "confirm" in request.form:
+            # product deletion code here
+            with pool.connection() as conn:
+                with conn.cursor(row_factory=namedtuple_row) as cur:
+                    cur.execute(
+                        """
+                        DELETE FROM supplier WHERE tin = %s
+                        """,
+                        (tin, )
+                    )
+
+                conn.commit()
+        return redirect(url_for("suppliers_index"))
+
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            supplier = cur.execute(
+                """SELECT * FROM supplier
+                WHERE tin = %s
+                """,
+                (tin, )
+            ).fetchone()
+
+    return render_template("suppliers/suppliers_remove.html", supplier=supplier)
 
 
 
@@ -147,32 +314,63 @@ def suppliers_remove():
 def clients_index():
     with pool.connection() as conn:
         with conn.cursor(row_factory=namedtuple_row) as cur:
-            cur.execute("""
+            clients = cur.execute(
+                """
                 SELECT * FROM customer
                 ORDER BY cust_no
-            """)
-            clients = cur.fetchall()
+                """
+            ).fetchall()
+    
     return render_template('clients/clients_index.html', clients=clients)
-
 
 @app.route("/clients/register", methods=("GET",))
 def clients_register():
     # your code here
     pass
 
-@app.route("/clients/remove", methods=("GET",))
-def clients_remove():
-    # your code here
-    pass
+@app.route("/clients/<int:cust_no>/remove", methods=("GET", "POST"))
+def clients_remove(cust_no):
+    if request.method == "POST":
+        if "confirm" in request.form:
+            # product deletion code here
+            with pool.connection() as conn:
+                with conn.cursor(row_factory=namedtuple_row) as cur:
+                    cur.execute(
+                        """
+                        DELETE FROM customer 
+                        WHERE cust_no = %s
+                        """,
+                        (cust_no, )
+                    )
+                conn.commit()
+
+        return redirect(url_for("clients_index"))
+
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            client = cur.execute(
+                """SELECT * FROM customer 
+                WHERE cust_no = %s
+                """,
+                (cust_no, )
+            ).fetchone()
+
+    return render_template("clients/clients_remove.html", client=client)
 
         
 
+#------------------------HELPER-------------------------
+
+def is_float(n):
+    try:
+        float_n = float(n)
+    except ValueError:
+        return False
+    else:
+        return True
 
 
-
-
-
-
+#-------------------------------------------------------
 
 
 

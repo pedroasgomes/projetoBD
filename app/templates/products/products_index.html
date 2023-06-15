@@ -14,7 +14,7 @@
           <div class="about">SKU: {{ product.sku }}</div>
           <div class="about">EAN: {{ product.ean }}</div>
         </div>
-        <a class="action-button" href="{{ url_for('products_edit', sku=product.sku) }}">Edit</a>
+        <a class="action-button" href="{{ url_for('products_edit', old_sku=product.sku) }}">Edit</a>
         <a class="delete-button" href="{{ url_for('products_remove', sku=product.sku) }}">Delete</a>
       </header>
       <p class="body">€ {{ product.price }}</p>

@@ -246,22 +246,23 @@ nav ul li a:hover {
   background-color: #005E74; /* Darker blue */
 }
 
-.register-form {
+.centered-form {
   display: flex;
   flex-wrap: wrap;
 }
 
-.register-form .form-group {
+.centered-form .form-group {
   flex: 0 0 50%; /* Adjust the value as needed to control the width of each input box */
 }
 
-.register-form .form-group label {
+.centered-form .form-group label {
   display: block;
   margin-bottom: 5px;
 }
 
-.register-form .form-group input,
-.register-form .form-group textarea {
+.centered-form .form-group input,
+.centered-form .form-group button,
+.centered-form .form-group textarea {
   width: 100%;
   padding: 5px;
   box-sizing: border-box;
@@ -286,4 +287,55 @@ nav ul li a:hover {
   text-align: center;
   margin-top: 20px;
 }
+
+.button-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.delete-confirm-button,
+.cancel-confirm-button {
+  width: 160px;
+  height: 48px;
+  padding: 0;
+  font-size: 1em;
+  text-align: center;
+  line-height: 48px;
+  border-radius: 10px;
+  box-sizing: border-box;
+  transition: all 0.3s ease 0s;
+  cursor: pointer;
+  font-weight: bold;
+  margin-left: 10px; /* Adjusted margin-left to create space between buttons */
+}
+
+
+.delete-confirm-button {
+  background-color: #cc2f2e;
+  border: none;
+  color: white;
+}
+
+.cancel-confirm-button {
+  background-color: #bbb;
+  border: none;
+  color: white;
+}
+
+.delete-confirm-button:hover {
+  background-color: #9a2120; /* Darker red on hover */
+}
+
+.cancel-confirm-button:hover {
+  background-color: #999; /* Darker gray on hover */
+}
+
+/* Form Center Align */
+.button-form {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
 
