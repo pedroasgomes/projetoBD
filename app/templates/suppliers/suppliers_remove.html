@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Remove Supplier{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <div class="centered-content">
+    <p>Are you sure you want to remove {{ supplier.name }}? This action is not recoverable!</p>
+    <form method="post" class="button-form">
+      <input type="submit" name="confirm" value="I am sure, Remove" class="delete-confirm-button">
+      <input type="submit" name="cancel" value="I changed my mind" class="cancel-confirm-button">
+    </form>
+  </div>
+{% endblock %}
