@@ -101,6 +101,7 @@ def client_menu(cust_no):
     return render_template('client/client_menu.html', client = client, cust_no = cust_no)
 
 
+
 @app.route("/client/<int:cust_no>/orders", methods=("GET",))
 def my_orders(cust_no):
     page_size = 5
@@ -156,7 +157,6 @@ def my_orders(cust_no):
 
     return render_template('client/my_orders.html', orders=orders, page=page, page_size=page_size, has_next_page=has_next_page, cust_no=cust_no)
 
-
 @app.route("/client/<int:cust_no>/market", methods=("GET","POST"))
 def market(cust_no):
     with pool.connection() as conn:
@@ -189,9 +189,6 @@ def market(cust_no):
 
 
     return render_template('client/market.html', products=products,cust_no=cust_no)
-
-
-
 
 @app.route("/clients/<int:cust_no>/<int:order_no>/pay", methods=("GET", "POST"))
 def confirm_payment(cust_no, order_no):
@@ -567,10 +564,10 @@ def clients_remove(cust_no):
                     cur.execute(
                         """
                         UPDATE customer
-                        SET name = 'N/A', email = 'N/A', phone = %s, address = %s
+                        SET name = 'N/A', email = %s, phone = %s, address = %s
                         WHERE cust_no = %s
                         """,
-                        (None, None, cust_no,)
+                        (str(cust_no), None, None, cust_no,)
                     )
 
         return redirect(url_for("clients_index"))
