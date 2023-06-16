@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Pay Order Confirmation{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <div class="centered-content">
+    <p style="padding: 0 0.5rem; color:white">Are you sure you want to pay order no. <span style="color: #6b71ff; font-weight: bold">{{ order_no }}</span>? This action is not recoverable!</p>
+    <form method="post" class="button-form" style="flex-direction: inherit;">
+      <input type="submit" name="confirm" value="Yes, please!" class="delete-button">
+      <input type="submit" name="cancel" value="No, thank you!" class="action-button">
+    </form>
+  </div>
+{% endblock %}

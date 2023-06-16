@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block header %}
+<h1>{% block title %}Welcome, <span style="color: #6b71ff; font-weight: bold">{{client.name}}</span>!{%endblock %}</h1> 
+{% endblock %}
+
+{% block content %}
+  <ul class="menu-list">
+    <li><a class="menu-button" href="{{ url_for('market', cust_no=client['cust_no']) }}">Visit Market</a></li>
+    <li><a class="menu-button" href="{{ url_for('my_orders', cust_no=client['cust_no']) }}">My Orders</a></li>
+  </ul>
+{% endblock %}

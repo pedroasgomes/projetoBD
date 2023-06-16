@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}My Orders{% endblock %}</h1>
+  <a class="add-button" href="{{  url_for('client_menu', cust_no=cust_no) }}">Menu</a>
+{% endblock %}
+
+{% block content %}
+  {% for order in orders %}
+    <article class="post">
+      <header>
+        <div>
+          <h1>Order No. {{ order }}</h1>
+                      <p class="body">Status: {{ orders[order][1]}}</p>
+          {% for product in orders[order][0] %}
+                <div class="about">{{ product[3] }}x {{ product[0] }} ({{ product[1] }}€) - {{ product[2] }}€ </div>
+            {% endfor %}
+        </div>
+        {% if orders[order][1] != 'Paid' %}
+        <a class="action-button" href="{{  url_for('confirm_payment', cust_no=cust_no, order_no=order) }}">Pay Now</a>
+        {% endif %}
+      </header>
+      <p class="price">€{{ orders[order][2]|int }},<span id="decimal">{{ "%02d"%((orders[order][2]-orders[order][2]|int)*100)|int }}</span></p>
+    </article>
+    {% if not loop.last %}
+      <hr>
+    {% endif %}
+  {% endfor %}
+
+
+
+
+
+  <div class="pagination">
+    <div class="button-container">
+      {% if page > 1 %}
+        <a class="prev-button page-button" href="{{ url_for('products_index', page=page-1) }}">Previous</a>
+      {% endif %}
+      {% if has_next_page %}
+        <a class="next-button page-button" href="{{ url_for('products_index', page=page+1) }}">Next</a>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

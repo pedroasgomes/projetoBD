@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Market{% endblock %}</h1>
+  <form method="POST" style="margin: 0;display: block;">
+  <input type="submit" value="Finish Order" id="completa-order">
+{% endblock %}
+
+{% block content %}
+
+  {% for product in products %}
+    <article class="post">
+      <header>
+        <div>
+          <h1>{{ product.name }}</h1>
+          <p class="body">{{ product.description }}</p>
+          <div class="about">SKU: {{ product.sku }} | EAN: {{ product.ean }}</div>
+           
+        </div>
+        <div>
+            <label id="quantity" for="quantity">Quantity</label>
+            <input type="number" id="quantity" name="quantity-{{product.sku}}" step="1" min="0" value="0" required>
+        </div>
+
+      </header>
+      <p class="price">€{{ product.price|int }},<span id="decimal">{{ "%02d"%((product.price-product.price|int)*100)|int }}</span></p>
+    </article>
+    {% if not loop.last %}
+      <hr>
+    {% endif %}
+  {% endfor %}
+</form>
+{% endblock %}

@@ -11,14 +11,14 @@
       <header>
         <div>
           <h1>{{ product.name }}</h1>
-          <div class="about">SKU: {{ product.sku }}</div>
-          <div class="about">EAN: {{ product.ean }}</div>
+          <p class="body">{{ product.description }}</p>
+          <div class="about">SKU: {{ product.sku }} | EAN: {{ product.ean }}</div>
+          
         </div>
-        <a class="action-button" href="{{ url_for('products_edit', old_sku=product.sku) }}">Edit</a>
+        <a class="action-button" href="{{ url_for('products_edit', sku=product.sku) }}">Edit</a>
         <a class="delete-button" href="{{ url_for('products_remove', sku=product.sku) }}">Delete</a>
       </header>
-      <p class="body">€ {{ product.price }}</p>
-      <p class="body">{{ product.description }}</p>
+      <p class="price">€{{ product.price|int }},<span id="decimal">{{ "%02d"%((product.price-product.price|int)*100)|int }}</span></p>
     </article>
     {% if not loop.last %}
       <hr>

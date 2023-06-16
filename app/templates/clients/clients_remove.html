@@ -6,10 +6,10 @@
 
 {% block content %}
   <div class="centered-content">
-    <p>Are you sure you want to remove {{ client.name }}? This action is not recoverable!</p>
-    <form method="post" class="button-form">
-      <input type="submit" name="confirm" value="I am sure, Remove" class="delete-confirm-button">
-      <input type="submit" name="cancel" value="I changed my mind" class="cancel-confirm-button">
+    <p style="padding: 0 0.5rem; color:white">Are you sure you want to remove <span style="color: #6b71ff; font-weight: bold">{{ client.name }}</span>? This action is not recoverable!</p>
+    <form method="post" class="button-form" style="flex-direction: inherit;">
+      <input type="submit" name="confirm" value="I am sure, Remove" class="delete-button">
+      <input type="submit" name="cancel" value="I changed my mind" class="action-button">
     </form>
   </div>
 {% endblock %}

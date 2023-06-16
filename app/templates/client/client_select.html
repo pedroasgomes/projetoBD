@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Clients{% endblock %}</h1>
-  <a class="add-button" href="{{ url_for('clients_register') }}">Add New Client</a>
+  <h1>{% block title %}Choose your profile{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
@@ -14,7 +13,7 @@
           <p class="body">{{ client['address'] }}</p>
           <div class="about">{{ client['email'] }} | {{ client['phone'] }}</div>
         </div>
-        <a class="delete-button" href="{{ url_for('clients_remove', cust_no=client['cust_no']) }}">Remove</a>
+        <a class="delete-button" href="{{ url_for('client_menu', cust_no=client['cust_no']) }}">Select</a>
       </header>
         <p class="price"><span id="decimal">ID</span>{{ client['cust_no'] }}</p>
     </article>
@@ -25,10 +24,10 @@
   <div class="pagination">
     <div class="button-container">
       {% if page > 1 %}
-        <a class="prev-button page-button" href="{{ url_for('clients_index', page=page-1) }}">Previous</a>
+        <a class="prev-button page-button" href="{{ url_for('client_list', page=page-1) }}">Previous</a>
       {% endif %}
       {% if has_next_page %}
-        <a class="next-button page-button" href="{{ url_for('clients_index', page=page+1) }}">Next</a>
+        <a class="next-button page-button" href="{{ url_for('client_list', page=page+1) }}">Next</a>
       {% endif %}
     </div>
   </div>
