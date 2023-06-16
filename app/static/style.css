@@ -1,28 +1,35 @@
 html {
-  font-family: sans-serif;
-  background: #eee;
+  font-family: Thicccboi, sans-serif;
+  background: #13111a;
   padding: 1rem;
 }
 
 body {
   max-width: 960px;
   margin: 0 auto;
-  background: white;
+  font-size: 18px;
+    
+}
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      color: #fff;
+      margin: 1rem 0;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: serif;
-  color: #377ba8;
-  margin: 1rem 0;
+section {
+    background: #1d1a27;
+    border-radius: 22px;
+    background-color: #1d1a27;
+    box-shadow: 0 5px 14px 0 rgba(0, 0, 0, 0.1);
 }
+
 
 a {
-  color: #377ba8;
+  color: #fff;
 }
 
 hr {
@@ -31,10 +38,9 @@ hr {
 }
 
 nav {
-  background: lightgray;
   display: flex;
   align-items: center;
-  padding: 0 0.5rem;
+  padding: 1.5rem 0;
 }
 
 nav h1 {
@@ -62,19 +68,49 @@ header .action {
   padding: 0.5rem;
 }
 
+nav ul li a#manager {
+  border-radius: 1000px;
+  text-align: center;
+  border-style: solid;
+  border-color: #6b71ff;
+  border-width: 1px;
+}
+
+nav ul li a#manager:hover {
+  background-color: #6b71ff2e;
+    color: #6b71ff;
+}
+
+
+nav ul li a {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.3s ease 0s;
+  border-radius: 5px;
+}
+
+nav ul li a:hover {
+  color: #6b71ff;
+}
+
+
+
 .content {
   padding: 0 1rem 1rem;
 }
 
 .content > header {
-  border-bottom: 1px solid lightgray;
+  border-bottom: 1px solid #ffffff2e;
   display: flex;
   align-items: flex-end;
 }
 
 .content > header h1 {
   flex: auto;
-  margin: 1rem 0 0.25rem 0;
+  margin: 1rem 0 0.5rem 0;
+  padding: 0 0.5rem;
 }
 
 .flash {
@@ -199,51 +235,43 @@ input[type=submit] {
   background-color: #d32f2f; /* Darker red */
 }
 
-h1 {
-  font-size: 28px; /* Adjust the font size as needed */
-}
-
-nav ul li a {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  background-color: #2e5d6d; /* Blue color */
-  color: white;
-  text-decoration: none;
-  text-align: center;
-  transition: all 0.3s ease 0s;
-  border-radius: 5px;
-}
-
-nav ul li a:hover {
-  background-color: #1d3b45; /* Darker blue */
-}
-
 .menu-list {
   list-style: none;
   padding: 0;
-  margin: 20px 0; /* Add top and bottom margin */
+  margin: 20px 0 0 0;
 }
 
 .menu-list li {
   margin-bottom: 10px;
+  display: inline-block;
 }
 
 .menu-button {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #007B9A; /* Blue color */
-  color: white;
-  text-decoration: none;
-  text-align: center;
-  transition: all 0.3s ease 0s;
-  border-radius: 5px;
-  cursor: pointer;
-  width: 120px; /* Set a fixed width for the buttons */
-  margin-right: 10px; /* Add some right margin for spacing */
+    display: inline-block;
+    padding: 10px 20px;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease 0s;
+    cursor: pointer;
+    width: 120px; /* Set a fixed width for the buttons */
+    margin-right: 10px; /* Add some right margin for spacing */
+    border-radius: 1000px;
+    text-align: center;
+    border-style: solid;
+    border-color: #6b71ff;
+    border-width: 1px;
+}
+
+.menu-list i {
+    color: #fff;
+    padding: 10px 20px;
+    background-color: #6b71ff; /* Blue color */
+
 }
 
 .menu-button:hover {
-  background-color: #005E74; /* Darker blue */
+  background-color: #6b71ff2e;
+    color: #6b71ff;
 }
 
 .centered-form {
