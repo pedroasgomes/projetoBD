@@ -1,133 +1,104 @@
-DROP DATABASE IF EXISTS postgres;
-
-CREATE DATABASE postgres;
-
-DROP TABLE IF EXISTS delivery;
-DROP TABLE IF EXISTS supplier;
-DROP TABLE IF EXISTS contains;
-DROP TABLE IF EXISTS pay;
-DROP TABLE IF EXISTS sale;
-DROP TABLE IF EXISTS processes;
-DROP TABLE IF EXISTS orders;
-DROP TABLE IF EXISTS works;
-DROP TABLE IF EXISTS warehouse;
-DROP TABLE IF EXISTS office;
-DROP TABLE IF EXISTS product;
-DROP TABLE IF EXISTS workplace;
-DROP TABLE IF EXISTS department;
-DROP TABLE IF EXISTS employee;
-DROP TABLE IF EXISTS customer;
-
+DROP TABLE IF EXISTS customer CASCADE;
+DROP TABLE IF EXISTS orders CASCADE;
+DROP TABLE IF EXISTS pay CASCADE;
+DROP TABLE IF EXISTS employee CASCADE;
+DROP TABLE IF EXISTS process CASCADE;
+DROP TABLE IF EXISTS department CASCADE;
+DROP TABLE IF EXISTS workplace CASCADE;
+DROP TABLE IF EXISTS works CASCADE;
+DROP TABLE IF EXISTS office CASCADE;
+DROP TABLE IF EXISTS warehouse CASCADE;
+DROP TABLE IF EXISTS product CASCADE;
+DROP TABLE IF EXISTS contains CASCADE;
+DROP TABLE IF EXISTS supplier CASCADE;
+DROP TABLE IF EXISTS delivery CASCADE;
 
 CREATE TABLE customer(
-	cust_no NUMERIC(9) PRIMARY KEY,
-	name VARCHAR(50),
-	email VARCHAR(50) NOT NULL UNIQUE,
-	phone NUMERIC(9),
-	address VARCHAR(100)
+    cust_no INTEGER PRIMARY KEY,
+    name VARCHAR(80) NOT NULL,
+    email VARCHAR(254) UNIQUE NOT NULL,
+    phone VARCHAR(15),
+    address VARCHAR(255)
+);
+
+CREATE TABLE orders(
+    order_no INTEGER PRIMARY KEY,
+    cust_no INTEGER NOT NULL REFERENCES customer,
+    date DATE NOT NULL
+    --order_no must exist in contains
+);
+
+CREATE TABLE pay(
+    order_no INTEGER PRIMARY KEY REFERENCES orders,
+    cust_no INTEGER NOT NULL REFERENCES customer
 );
 
 CREATE TABLE employee(
-	ssn NUMERIC(9) PRIMARY KEY,
-	tin NUMERIC(9) NOT NULL UNIQUE,
-	bdate DATE,
-	name VARCHAR(50)
+    ssn VARCHAR(20) PRIMARY KEY,
+    TIN VARCHAR(20) UNIQUE NOT NULL,
+    bdate DATE,
+    name VARCHAR NOT NULL
+    --age must be >=18
+);
+
+CREATE TABLE process(
+    ssn VARCHAR(20) REFERENCES employee,
+    order_no INTEGER REFERENCES orders,
+    PRIMARY KEY (ssn, order_no)
 );
 
 CREATE TABLE department(
-	name VARCHAR(50) PRIMARY KEY
+    name VARCHAR PRIMARY KEY
 );
 
 CREATE TABLE workplace(
-	address VARCHAR(100) PRIMARY KEY,
-	lat NUMERIC(11,6) NOT NULL,
-	long NUMERIC(11,6) NOT NULL,
-	UNIQUE (lat, long)
-);
-
-CREATE TABLE product(
-	sku NUMERIC(9) PRIMARY KEY,
-	name VARCHAR(50),
-	description VARCHAR(100),
-	price NUMERIC(5,2),
-	ean NUMERIC(13)
+    address VARCHAR PRIMARY KEY,
+    lat NUMERIC(8, 6) NOT NULL,
+    long NUMERIC(9, 6) NOT NULL,
+    UNIQUE(lat, long)
+    --address must be in warehouse or office but not both
 );
 
 CREATE TABLE office(
-	address VARCHAR(100),
-	PRIMARY KEY (address),
-	FOREIGN KEY (address) REFERENCES workplace ON DELETE CASCADE ON UPDATE CASCADE
+    address VARCHAR(255) PRIMARY KEY REFERENCES workplace
 );
 
 CREATE TABLE warehouse(
-	address VARCHAR(100),
-	PRIMARY KEY (address),
-	FOREIGN KEY (address) REFERENCES workplace ON DELETE CASCADE ON UPDATE CASCADE
+    address VARCHAR(255) PRIMARY KEY REFERENCES workplace
 );
 
 CREATE TABLE works(
-	ssn NUMERIC(9),
-	name VARCHAR(50),
-	address VARCHAR(100),
-	PRIMARY KEY (ssn,name,address),
-
-	FOREIGN KEY (ssn) REFERENCES employee ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (name) REFERENCES department ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (address) REFERENCES workplace ON DELETE CASCADE ON UPDATE CASCADE
-); -- Cada employee tem pelo menos 1 entrada na tabela works
-
-CREATE TABLE orders(
-	order_no NUMERIC(9) PRIMARY KEY,
-	date DATE,
-	cust_no NUMERIC(9) NOT NULL,
-	FOREIGN KEY (cust_no) REFERENCES customer ON DELETE CASCADE ON UPDATE CASCADE
+    ssn VARCHAR(20) REFERENCES employee,
+    name VARCHAR(200) REFERENCES department,
+    address VARCHAR(255) REFERENCES workplace,
+    PRIMARY KEY (ssn, name, address)
 );
 
-CREATE TABLE processes(
-	ssn NUMERIC(9),
-	order_no NUMERIC(9),
-	PRIMARY KEY (ssn,order_no),
-	FOREIGN KEY (ssn) REFERENCES employee ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (order_no) REFERENCES orders ON DELETE CASCADE ON UPDATE CASCADE
+CREATE TABLE product(
+    SKU VARCHAR(25) PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    description VARCHAR,
+    price NUMERIC(10, 2) NOT NULL,
+    ean NUMERIC(13) UNIQUE
 );
-
-CREATE TABLE sale(
-	order_no NUMERIC(9),
-	PRIMARY KEY (order_no),
-	FOREIGN KEY (order_no) REFERENCES orders ON DELETE CASCADE ON UPDATE CASCADE);
-
-CREATE TABLE pay(
-	order_no NUMERIC(9),
-	cust_no NUMERIC(9),
-	PRIMARY KEY (order_no),
-	FOREIGN KEY (order_no) REFERENCES orders ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (cust_no) REFERENCES customer ON DELETE CASCADE ON UPDATE CASCADE
-);
--- o tuplo (order_no,cust_no) tem de estar presente tambem em orders
-
 
 CREATE TABLE contains(
-	order_no NUMERIC(9),
-	sku NUMERIC(9),
-	qty NUMERIC(3),
-	PRIMARY KEY (order_no, sku),
-	FOREIGN KEY (order_no) REFERENCES orders ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (sku) REFERENCES product ON DELETE CASCADE ON UPDATE CASCADE
-); -- todos os order_no de orders tem pelo menos 1 entrada em contains
+    order_no INTEGER REFERENCES orders,
+    SKU VARCHAR(25) REFERENCES product,
+    qty INTEGER,
+    PRIMARY KEY (order_no, SKU)
+);
 
 CREATE TABLE supplier(
-	tin NUMERIC(9) PRIMARY KEY,
-	name VARCHAR(50),
-	address VARCHAR(100),
-	sku NUMERIC(9) NOT NULL,
-	date DATE,
-	FOREIGN KEY (sku) REFERENCES product ON DELETE CASCADE ON UPDATE CASCADE
-); -- cada sku em product tem pelo menos 1 entrada em supplier
+    TIN VARCHAR(20) PRIMARY KEY,
+    name VARCHAR(200),
+    address VARCHAR(255),
+    SKU VARCHAR(25) REFERENCES product,
+    date DATE
+);
 
 CREATE TABLE delivery(
-	tin NUMERIC(9),
-	address VARCHAR(100),
-	PRIMARY KEY (tin,address),
-	FOREIGN KEY (tin) REFERENCES supplier ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (address) REFERENCES warehouse ON DELETE CASCADE ON UPDATE CASCADE
+    address VARCHAR(255) REFERENCES warehouse,
+    TIN VARCHAR(20) REFERENCES supplier,
+    PRIMARY KEY (address, TIN)
 );

@@ -2,8 +2,7 @@
 
 {% block header %}
   <h1>{% block title %}Suppliers{% endblock %}</h1>
-  <a class="add-button" href="{{ url_for('suppliers_register') }}">Add New Supplier</a>
-{% endblock %}
+  <a class="add-button" href="{{ url_for('suppliers_register') }}">Add New Supplier</a>{% endblock %}
 
 {% block content %}
   {% for supplier in suppliers %}
@@ -11,16 +10,24 @@
       <header>
         <div>
           <h1>{{ supplier['name'] }}</h1>
-          <div class="about">TIN: {{ supplier['tin'] }}</div>
-          <div class="about">{{ supplier['address'] }}</div>
+          <p class="body">{{ supplier['address'] }}</p>
+          <div class="about">TIN: {{ supplier['tin'] }} | SKU: {{ supplier['sku'] }} | Date: {{ supplier['date'] }}</div>
         </div>
         <a class="delete-button" href="{{ url_for('suppliers_remove', tin=supplier['tin']) }}">Remove</a>
       </header>
-      <p class="body">SKU: {{ supplier['sku'] }}</p>
-      <p class="body">Date: {{ supplier['date'] }}</p>
     </article>
     {% if not loop.last %}
       <hr>
     {% endif %}
-  {% endfor %}
-{% endblock %}
+    {% endfor %}
+    <div class="pagination">
+      <div class="button-container">
+        {% if page > 1 %}
+          <a class="prev-button page-button" href="{{ url_for('suppliers_index', page=page-1) }}">Previous</a>
+        {% endif %}
+        {% if has_next_page %}
+          <a class="next-button page-button" href="{{ url_for('suppliers_index', page=page+1) }}">Next</a>
+        {% endif %}
+      </div>
+    </div>
+  {% endblock %}
